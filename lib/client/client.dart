@@ -29,7 +29,8 @@ class MqttClient {
       ..onConnected = onConnected
       ..onDisconnected = onDisconnected
       ..onSubscribed = onSubscribed
-      ..onSubscribeFail = onSubscribeFail;
+      ..onSubscribeFail = onSubscribeFail
+      ..updates?.listen(onUpdates);
   }
 
   Future<void> connect() async {
@@ -50,6 +51,13 @@ class MqttClient {
 
   void onSubscribeFail(String err) {
     log("subscribing failed : $err");
+  }
+
+  void onUpdates(List<MqttReceivedMessage<MqttMessage>> recMessages) {
+    final recMessage = recMessages[0].payload as MqttPublishMessage;
+    final payLoad =
+        MqttPublishPayload.bytesToStringAsString(recMessage.payload.message);
+    print("recived message $payLoad from topic ${recMessages[0].topic}");
   }
 }
 
